@@ -1,4 +1,4 @@
-Array.prototype.shuffle = function() {
+Array.prototype.shuffle = function () {
   var currentIndex = this.length, temp, rand;
 
   while (currentIndex !== 0) {
@@ -9,7 +9,7 @@ Array.prototype.shuffle = function() {
     this[currentIndex] = this[rand];
     this[rand] = temp;
   }
-}
+};
 
 // these map to the numbers and probability dots
 // found on the Catan board
@@ -26,18 +26,16 @@ function numbersAndProbabilities() {
     10: 3,
     11: 2,
     12: 1
-  }
+  };
 }
 
-var DiceRoller = (function() {
-  function DiceRoller(config) {
-    var that = this;
-
+var DiceRoller = (function () {
+  function DiceRoller() {
     this.currentRollIndex = 0;
     this.rolls = [];
   }
 
-  DiceRoller.prototype.rollDice = function() {
+  DiceRoller.prototype.rollDice = function () {
     var roll;
 
     if (!this.rolls[this.currentRollIndex]) {
@@ -48,16 +46,16 @@ var DiceRoller = (function() {
 
     this.currentRollIndex += 1;
     return roll;
-  }
+  };
 
   function generateRolls() {
-    var localNumbersAndProbabilities = numbersAndProbabilities();
-    var generated = [];
-    var i;
+    var localNumbersAndProbabilities = numbersAndProbabilities(),
+    generated = [],
+    i, prop;
 
     // adds each dice number to 'generated' as many times as
     // it is likely to appear on average in 36 rolls
-    for (var prop in localNumbersAndProbabilities) {
+    for (prop in localNumbersAndProbabilities) {
       for (i = 0; i < localNumbersAndProbabilities[prop]; i++)
         generated.push(prop);
     }
@@ -78,14 +76,13 @@ var TextRenderer = (function () {
   TextRenderer.prototype.render = function (text) {
     for (var i = 0; i < this.displayElements.length; i++)
       this.displayElements[i].textContent = text;
-  }
+  };
 
   return TextRenderer;
 })();
 
 function main() {
-  var triggerElements, diceRollHandler;
-  var diceRoller, textRenderer;
+  var triggerElements, diceRollHandler, diceRoller, textRenderer;
 
   diceRoller = new DiceRoller();
   textRenderer = new TextRenderer({
@@ -94,12 +91,12 @@ function main() {
 
   triggerElements = document.querySelectorAll('.roll-dice');
 
-  diceRollHandler = function(e) {
+  diceRollHandler = function (e) {
     var roll = diceRoller.rollDice();
     textRenderer.render(roll);
   }
 
-  for (var i = 0; i < triggerElements.length; i++ )
+  for (var i = 0; i < triggerElements.length; i++)
     triggerElements[i].addEventListener("click", diceRollHandler, false);
 }
 
