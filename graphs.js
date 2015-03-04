@@ -22,6 +22,12 @@
       }
     }
 
+    var fullDeckLength = Object.keys(frequencyMap).map(function(key) {
+      return frequencyMap[key];
+    }).reduce(function(a, b) {
+      return a + b;
+    });
+
     var elements = Object.create(null);
     for (var key in frequencyMap) {
 
@@ -55,6 +61,27 @@
         tick.style.strokeWidth = 5;
       }
 
+      var yAxis = document.createElementNS(svgns, 'g');
+      graph.appendChild(yAxis);
+      var yLine = document.createElementNS(svgns, 'line');
+      yAxis.appendChild(yLine);
+      yLine.setAttributeNS(null, 'x1', 0);
+      yLine.setAttributeNS(null, 'y1', config.height);
+      yLine.setAttributeNS(null, 'x2', 0);
+      yLine.setAttributeNS(null, 'y2', 0);
+      yLine.style.stroke = 'blue';
+      yLine.style.strokeWidth = 5;
+      for (var i = config.yTick; i <= fullDeckLength; i += config.yTick) {
+        var tick = document.createElementNS(svgns, 'line');
+        var y = config.height - ((i / fullDeckLength) * config.height);
+        yAxis.appendChild(tick);
+        tick.setAttributeNS(null, 'x1', -5);
+        tick.setAttributeNS(null, 'y1', y);
+        tick.setAttributeNS(null, 'x2', 5);
+        tick.setAttributeNS(null, 'y2', y);
+        tick.style.stroke = 'blue';
+        tick.style.strokeWidth = 5;
+      }
 
       elements[key] = svg;
     }
