@@ -7,7 +7,8 @@
     width: 800,
     paddingPercent: 10,
     xTick: 10,
-    yTick: 10
+    yTick: 10,
+    sampleRate: 1
   };
 
   var catanGraphs = window.catanGraphs = function(currentDeck, frequencyMap, config) {
@@ -83,8 +84,44 @@
         tick.style.strokeWidth = 5;
       }
 
+      var plot = document.createElementNS(svgns, 'path');
+      graph.appendChild(plot);
+      var path = 'M 0 ' + (config.height - (getProbability(key, 0) * config.height));
+      for (var i = config.sampleRate; i <= config.maxTurns; i += config.sampleRate) {
+        var x = (i / config.maxTurns) * config.width;
+        var y = config.height - (getProbability(key, i) * config.height);
+        path += ' L ' + x + ' ' + y;
+      }
+      plot.setAttributeNS(null, 'd', path);
+      plot.style.stroke = 'red';
+      plot.style.strokeWidth = 5;
+      plot.style.fill = 'none'
+
       elements[key] = svg;
     }
+
+    function getProbability(key, horizon) {
+      var deckFrequency = 0;
+      currentDeck.forEach(function(number) {
+        if (key === number.toString()) {
+          deckFrequency += 1;
+        }
+      });
+      var rawProbability = frequencyMap[key] / fullDeckLength;
+      if (currentDeck.length === 0) {
+        return rawProbability;
+      }
+      var deckProbability = deckFrequency / currentDeck.length;
+      if (horizon <= currentDeck.length) {
+        return deckProbability;
+      }
+      var distancePastDeckLength = horizon - currentDeck.length;
+      var deckProduct = deckProbability * currentDeck.length;
+      var rawProduct = rawProbability * distancePastDeckLength;
+      return (deckProduct + rawProduct) / horizon;
+    }
+
     return elements;
   };
+
 })();
