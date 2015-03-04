@@ -114,7 +114,7 @@ var TextRenderer = (function () {
   TextRenderer.prototype.displayProbabilities = function(probabilities) {
     for (var number in probabilities) {
       var outputEl = document.getElementById('value-' + number);
-      outputEl.textContent = probabilities[number].toFixed(3).toString();
+      outputEl.textContent = probabilities[number].toFixed(1).toString();
     }
   }
 
