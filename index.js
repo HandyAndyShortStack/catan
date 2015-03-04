@@ -65,6 +65,37 @@ var DiceRoller = (function () {
     this.rolls.push.apply(this.rolls, generated);
   }
 
+  DiceRoller.prototype.probabilities = function() {
+    var _numbersAndProbabilities = numbersAndProbabilities();
+    var allNumbers = Object.keys(_numbersAndProbabilities);
+    var remainingRolls = this.rolls.slice(this.currentRollIndex);
+
+    // get a fully stacked rolls array to anticipate the first roll of a cycle
+    if (remainingRolls.length === 0) {
+      var dummyRoller = {rolls: []};
+      generateRolls.call(dummyRoller);
+      remainingRolls = dummyRoller.rolls;
+    }
+
+    var probabilityMap = Object.create(null);
+    allNumbers.forEach(function(number) {
+      probabilityMap[number] = 0;
+    });
+    remainingRolls.forEach(function(number) {
+      probabilityMap[number] += 1;
+    });
+    for (var number in probabilityMap) {
+      var count = probabilityMap[number];
+      if (count === 0) {
+        var frequency = 0;
+      } else {
+        var frequency = count / remainingRolls.length;
+      }
+      probabilityMap[number] = frequency * 36;
+    }
+    return probabilityMap;
+  };
+
   return DiceRoller;
 })();
 
@@ -73,10 +104,19 @@ var TextRenderer = (function () {
     this.displayElements = config.displayElements;
   }
 
-  TextRenderer.prototype.render = function (text) {
-    for (var i = 0; i < this.displayElements.length; i++)
+  TextRenderer.prototype.render = function(text, probabilities) {
+    for (var i = 0; i < this.displayElements.length; i++) {
       this.displayElements[i].textContent = text;
+    }
+    this.displayProbabilities(probabilities);
   };
+
+  TextRenderer.prototype.displayProbabilities = function(probabilities) {
+    for (var number in probabilities) {
+      var outputEl = document.getElementById('value-' + number);
+      outputEl.textContent = probabilities[number].toFixed(3).toString();
+    }
+  }
 
   return TextRenderer;
 })();
@@ -93,11 +133,15 @@ function main() {
 
   diceRollHandler = function (e) {
     var roll = diceRoller.rollDice();
-    textRenderer.render(roll);
+    var probabilities = diceRoller.probabilities();
+    textRenderer.render(roll, probabilities);
   }
 
-  for (var i = 0; i < triggerElements.length; i++)
+  for (var i = 0; i < triggerElements.length; i++) {
     triggerElements[i].addEventListener("click", diceRollHandler, false);
+  }
+
+  textRenderer.displayProbabilities(diceRoller.probabilities());
 }
 
 window.addEventListener("load", main, false);
