@@ -49,33 +49,33 @@ var DiceRoller = (function () {
   };
 
   DiceRoller.prototype.probabilities = function() {
-    var probabilityMap = remainingRollsProbabilityMap.call(this);
+    var probabilities = remainingRollsCountMap.call(this);
 
-    for (var number in probabilityMap) {
-      var count = probabilityMap[number];
+    for (var number in probabilities) {
+      var count = probabilities[number];
       if (count === 0) {
         var frequency = 0;
       } else {
         var frequency = count / remainingRolls.call(this).length;
       }
-      probabilityMap[number] = frequency * 36;
+      probabilities[number] = frequency * 36;
     }
 
-    return probabilityMap;
+    return probabilities;
   };
 
-  function remainingRollsProbabilityMap() {
-    var probabilityMap = Object.create(null);
+  function remainingRollsCountMap() {
+    var countMap = Object.create(null);
 
     allNumbers().forEach(function(number) {
-      probabilityMap[number] = 0;
+      countMap[number] = 0;
     });
 
     remainingRolls.call(this).forEach(function(number) {
-      probabilityMap[number] += 1;
+      countMap[number] += 1;
     });
 
-    return probabilityMap;
+    return countMap;
   }
 
   function generateRolls() {
