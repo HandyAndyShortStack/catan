@@ -61,38 +61,47 @@ var DiceRoller = (function () {
     }
 
     generated.shuffle();
-
     this.rolls.push.apply(this.rolls, generated);
   }
 
-  DiceRoller.prototype.probabilities = function() {
-    var _numbersAndProbabilities = numbersAndProbabilities();
-    var allNumbers = Object.keys(_numbersAndProbabilities);
+  function remainingRolls() {
     var remainingRolls = this.rolls.slice(this.currentRollIndex);
+    var dummyRoller;
+
+    if (!(remainingRolls.length === 0)) return remainingRolls;
 
     // get a fully stacked rolls array to anticipate the first roll of a cycle
-    if (remainingRolls.length === 0) {
-      var dummyRoller = {rolls: []};
-      generateRolls.call(dummyRoller);
-      remainingRolls = dummyRoller.rolls;
-    }
+    dummyRoller = {rolls: []};
+    generateRolls.call(dummyRoller);
+    return dummyRoller.rolls;
+  }
 
+  function allNumbers() {
+    return Object.keys(numbersAndProbabilities());
+  }
+
+  DiceRoller.prototype.probabilities = function() {
+    var _remainingRolls = remainingRolls.call(this);
     var probabilityMap = Object.create(null);
-    allNumbers.forEach(function(number) {
+
+    allNumbers().forEach(function(number) {
       probabilityMap[number] = 0;
     });
-    remainingRolls.forEach(function(number) {
+
+    _remainingRolls.forEach(function(number) {
       probabilityMap[number] += 1;
     });
+
     for (var number in probabilityMap) {
       var count = probabilityMap[number];
       if (count === 0) {
         var frequency = 0;
       } else {
-        var frequency = count / remainingRolls.length;
+        var frequency = count / _remainingRolls.length;
       }
       probabilityMap[number] = frequency * 36;
     }
+
     return probabilityMap;
   };
 
