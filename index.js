@@ -118,17 +118,29 @@ var TextRenderer = (function () {
     this.displayElements = config.displayElements;
   }
 
-  TextRenderer.prototype.render = function(text, probabilities) {
+  TextRenderer.prototype.render = function(text, probabilities, counts) {
     for (var i = 0; i < this.displayElements.length; i++) {
       this.displayElements[i].textContent = text;
     }
     this.displayProbabilities(probabilities);
+    this.displayCounts(counts);
   };
 
   TextRenderer.prototype.displayProbabilities = function(probabilities) {
     for (var number in probabilities) {
-      var outputEl = document.getElementById('value-' + number);
+      var outputEl = document.getElementById('value-' + number + '-probability');
       outputEl.textContent = probabilities[number].toFixed(1).toString();
+    }
+  }
+
+  TextRenderer.prototype.displayCounts = function(counts) {
+    for (var number in counts) {
+      var outputEl, dots = "";
+      outputEl = document.getElementById('value-' + number + '-count');
+      for (var i = 0; i < counts[number]; i++) {
+        dots += ".";
+      }
+      outputEl.textContent = dots;
     }
   }
 
@@ -148,7 +160,8 @@ function main() {
   diceRollHandler = function (e) {
     var roll = diceRoller.rollDice();
     var probabilities = diceRoller.probabilities();
-    textRenderer.render(roll, probabilities);
+    var counts = diceRoller.remainingRollsCountMap();
+    textRenderer.render(roll, probabilities, counts);
   }
 
   for (var i = 0; i < triggerElements.length; i++) {
@@ -156,6 +169,7 @@ function main() {
   }
 
   textRenderer.displayProbabilities(diceRoller.probabilities());
+  textRenderer.displayCounts(diceRoller.remainingRollsCountMap());
 }
 
 window.addEventListener("load", main, false);
