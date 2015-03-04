@@ -118,12 +118,13 @@ var TextRenderer = (function () {
     this.displayElements = config.displayElements;
   }
 
-  TextRenderer.prototype.render = function(text, probabilities, counts) {
+  TextRenderer.prototype.render = function(text, probabilities, counts, deck) {
     for (var i = 0; i < this.displayElements.length; i++) {
       this.displayElements[i].textContent = text;
     }
     this.displayProbabilities(probabilities);
     this.displayCounts(counts);
+    this.displayGraphs(deck);
   };
 
   TextRenderer.prototype.displayProbabilities = function(probabilities) {
@@ -131,7 +132,7 @@ var TextRenderer = (function () {
       var outputEl = document.getElementById('value-' + number + '-probability');
       outputEl.textContent = probabilities[number].toFixed(1).toString();
     }
-  }
+  };
 
   TextRenderer.prototype.displayCounts = function(counts) {
     for (var number in counts) {
@@ -142,7 +143,18 @@ var TextRenderer = (function () {
       }
       outputEl.textContent = dots;
     }
-  }
+  };
+
+  TextRenderer.prototype.displayGraphs = function(deck) {
+    var graphs = catanGraphs(deck, numbersAndProbabilities());
+    for (var number in numbersAndProbabilities()) {
+      var outputEl = document.getElementById('value-' + number + '-graph');
+      if (outputEl.firstChild) {
+        outputEl.removeChild(outputEl.firstChild);
+      }
+      outputEl.appendChild(graphs[number]);
+    }
+  };
 
   return TextRenderer;
 })();
@@ -161,7 +173,8 @@ function main() {
     var roll = diceRoller.rollDice();
     var probabilities = diceRoller.probabilities();
     var counts = diceRoller.remainingRollsCountMap();
-    textRenderer.render(roll, probabilities, counts);
+    var deck = diceRoller.rolls.slice(diceRoller.currentRollIndex);
+    textRenderer.render(roll, probabilities, counts, deck);
   }
 
   for (var i = 0; i < triggerElements.length; i++) {
@@ -170,6 +183,7 @@ function main() {
 
   textRenderer.displayProbabilities(diceRoller.probabilities());
   textRenderer.displayCounts(diceRoller.remainingRollsCountMap());
+  textRenderer.displayGraphs(diceRoller.rolls.slice(diceRoller.currentRollIndex));
 }
 
 window.addEventListener("load", main, false);

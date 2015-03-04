@@ -8,7 +8,7 @@
     paddingPercent: 10
   };
 
-  var catanGraph = window.catanGraph = function(currentDeck, frequencyMap, config) {
+  var catanGraphs = window.catanGraphs = function(currentDeck, frequencyMap, config) {
     // if we only had direct access to objects' prototype chains...
     if (typeof config === 'undefined') {
       config = defaults;
@@ -32,6 +32,6 @@
     circle.style.fill = 'red';
 
     svg.appendChild(circle);
-    document.body.appendChild(svg);
+    return {2: svg.cloneNode(true), 3: svg.cloneNode(true), 4: svg.cloneNode(true), 5: svg.cloneNode(true), 6: svg.cloneNode(true), 7: svg.cloneNode(true), 8: svg.cloneNode(true), 9: svg.cloneNode(true), 10: svg.cloneNode(true), 11: svg.cloneNode(true), 12: svg.cloneNode(true)};
   };
 })();
