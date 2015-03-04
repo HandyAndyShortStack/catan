@@ -49,7 +49,7 @@ var DiceRoller = (function () {
   };
 
   DiceRoller.prototype.probabilities = function() {
-    var probabilities = remainingRollsCountMap.call(this);
+    var probabilities = this.remainingRollsCountMap();
 
     for (var number in probabilities) {
       var count = probabilities[number];
@@ -64,7 +64,7 @@ var DiceRoller = (function () {
     return probabilities;
   };
 
-  function remainingRollsCountMap() {
+  DiceRoller.prototype.remainingRollsCountMap = function () {
     var countMap = Object.create(null);
 
     allNumbers().forEach(function(number) {
