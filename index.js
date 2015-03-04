@@ -48,6 +48,31 @@ var DiceRoller = (function () {
     return roll;
   };
 
+  DiceRoller.prototype.probabilities = function() {
+    var _remainingRolls = remainingRolls.call(this);
+    var probabilityMap = Object.create(null);
+
+    allNumbers().forEach(function(number) {
+      probabilityMap[number] = 0;
+    });
+
+    _remainingRolls.forEach(function(number) {
+      probabilityMap[number] += 1;
+    });
+
+    for (var number in probabilityMap) {
+      var count = probabilityMap[number];
+      if (count === 0) {
+        var frequency = 0;
+      } else {
+        var frequency = count / _remainingRolls.length;
+      }
+      probabilityMap[number] = frequency * 36;
+    }
+
+    return probabilityMap;
+  };
+
   function generateRolls() {
     var localNumbersAndProbabilities = numbersAndProbabilities(),
     generated = [],
@@ -79,31 +104,6 @@ var DiceRoller = (function () {
   function allNumbers() {
     return Object.keys(numbersAndProbabilities());
   }
-
-  DiceRoller.prototype.probabilities = function() {
-    var _remainingRolls = remainingRolls.call(this);
-    var probabilityMap = Object.create(null);
-
-    allNumbers().forEach(function(number) {
-      probabilityMap[number] = 0;
-    });
-
-    _remainingRolls.forEach(function(number) {
-      probabilityMap[number] += 1;
-    });
-
-    for (var number in probabilityMap) {
-      var count = probabilityMap[number];
-      if (count === 0) {
-        var frequency = 0;
-      } else {
-        var frequency = count / _remainingRolls.length;
-      }
-      probabilityMap[number] = frequency * 36;
-    }
-
-    return probabilityMap;
-  };
 
   return DiceRoller;
 })();
